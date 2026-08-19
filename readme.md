@@ -1,5 +1,5 @@
 # Quadcopter Writeup
-- Hardware
+- [Hardware](./hardware.md)
 - Electronics
 - Software
 
