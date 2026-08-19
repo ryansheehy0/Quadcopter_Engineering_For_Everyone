@@ -1,6 +1,9 @@
 # Software
-- Overview of a simple flight controller
+- The software for the flight controller, the brains of the drone, is where most of the complexity lies.
 
+- Let's say you have a graph with the 
+
+--------------------------------------------------------------------------------
 - Use graph to explain integrals and reiman sum.
 	- x-axis: time
 	- y-axis: velocity
