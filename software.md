@@ -1,49 +1,63 @@
 # Software
-- The software for the flight controller, the brains of the drone, is where most of the complexity lies.
+Let's say you have a graph of velocity.  
+The X-axis is time, and the Y-axis is velocity.  
+In calculus, you learned that you can find the position by taking the integral, which is the area under the curve.  
+This area can be approximated by taking a bunch of thin rectangles and adding their areas together, called the Riemann sum.  
+This approximation becomes more accurate as you use more rectangles.  
 
-- Let's say you have a graph with the 
+[Video animation of integrals.]()
 
---------------------------------------------------------------------------------
-- Use graph to explain integrals and reiman sum.
-	- x-axis: time
-	- y-axis: velocity
-	- Used to get position
-	- Computers use reiman sums not integrals
-- Give example of code for velocity
+The flight controller does something similar, but instead of infinitely small rectangles, it uses very small time intervals, on the order of microseconds.  
+Here's an example of pseudocode, which is used to explain concepts but isn't real code.  
+If you don't understand code, just know that each line is its own instruction, and the instructions are executed from top to bottom, one line at a time.  
 
 ```
-function currentTime()
-function currentVelocity()
+function getCurrentTime()
+function getCurrentVelocity()
 
-main
-	prevTime = currentTime()
-	position
+start of code
+	prevTime = getCurrentTime()
+	position = 0
 
-	while
-		deltaTime = currentTime() - prevTime
-		prevTime = currentTime()
+	loop
+		deltaTime = getCurrentTime() - prevTime
+		prevTime = getCurrentTime()
 
-		position += currentVelocity * deltaTime
+		position = position + (getCurrentVelocity() * deltaTime)
 ```
 
-- This is known as dead reckoning. This was originally used with boards.
-	- Problem. Errors accumulate so you have to corret for those erros with an outside source, like stars in the night sky.
-- Introduce the IMU with gyro to get the angle and then accelerometer and magnometer to correct for errors.
-	- Explain acro mode vs stablized mode
-	- Instead of linear distance it's used to find orientation around an axis.
-- Explain full loop of drone
-	- Calcualte delta time
-	- Get info from IMU
-	- Estimate angl of the drone
-	- Get controller input
-	- Feed into PIDs
-	- Motor mixing
-- Explain PIDs and how each variabl controls the shap of the graph
-- Explain flight controllers vs flight computers
+This pseudocode will keep track of the robot's current position in one dimension.  
 
-## PIDs
-- Explain feedback loops with the example of the temp in a shower.
-- When there's a delay in the measurement, then there's osculations.
-- PIDs are there to explain this.
+[Maybe show video of what? Of keeping tack of robot in 1D.]()
 
-- You could just wait for the delay to end.
+This is known as dead reckoning, which was originally used to keep track of the position of boats.  
+For example, if you know your boat's current position on a map, how fast you're traveling, how long you've traveled, and your direction, you can keep track of your boat's current position.  
+
+[Video explaining dead reckoning with a boat.]()
+
+The problem with dead reckoning is that errors accumulate over time.  
+As time passes, the estimate of your position becomes less and less accurate.  
+In order for this to be precise, you need to periodically reset your position using an outside reference, such as the stars in the night sky.  
+
+[Maybe video showing finding position with stars in the night sky.]()
+
+For a drone, the same concepts apply.  
+Instead of measuring velocity, the drone measures angular velocity from the gyroscope in the IMU (Inertial Measurement Unit).  
+This angular velocity is added up, like in the pseudocode example, to estimate the current angular position of the drone.  
+But the problem is that errors accumulate, so the estimate needs to be corrected using an outside reference.  
+In this case, that outside reference is the direction of Earth's gravity, measured using the accelerometer in the IMU.  
+With some trigonometry, you can determine the drone's current angle and correct for the gyroscope's accumulated error.  
+But the accelerometer is very sensitive to bumps and vibrations, so it can't replace the gyroscope, just correct the errors.  
+
+[Maybe video explaing IMU and gyro/acc.]()
+
+These are the main steps required in the flight controller's main loop:  
+1. Calculate the delta time and set the previous time, as shown in the previous pseudocode.  
+2. Get data from the IMU sensor.  
+3. Estimate the drone's current angle using the deltaTime and gyroscope data, with a slight correction from the accelerometer.  
+4. Get the user's input from the receiver.  
+5. Use the drone's current angle and the user's inputs in a specific algorithm called a PID controller to determine how much to move the drone along all three axes.  
+6. Translate how much the drone needs to move into how much power to give each motor, a process called motor mixing.  
+This loop happens roughly every 250 microseconds, allowing the drone to react to the user's commands in real time while staying balanced in the air.  
+
+If you're interested, you can learn more about the specific algorithms [here](link to advanced software).  
